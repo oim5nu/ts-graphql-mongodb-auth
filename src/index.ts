@@ -1,47 +1,48 @@
+import "reflect-metadata";
 import { ApolloServer } from "apollo-server-express";
 import express from "express";
-import "reflect-metadata";
 import { buildSchema } from "type-graphql";
-import { HelloWorldResolver } from "./resolvers/HelloWorldResolver";
 
-import mongoose from "mongoose";
+require("dotenv").config();
+
+import { HelloWorldResolver } from "./helloworld/helloworld-resolver";
+import { UserResolver } from "./authentication/resolver.user";
+import { getConnection } from "./db-conn";
 
 async function startServer() {
-    require("dotenv").config();
+
+    // Start graphql server
     const schema = await buildSchema({
-        resolvers: [HelloWorldResolver],
+        resolvers: [HelloWorldResolver, UserResolver],
         emitSchemaFile: true,
     });
 
+    const server = new ApolloServer({
+        schema,
+        context: async ({req, res}) => {
+            const dbConn = await getConnection();
+    
+            return { req, res, dbConn };
+        },
+        playground: true,
+        introspection: true
+    });    
+
+    // Start mongoDB
+    //await connectMongoDB();
+
     const app = express();
 
-    const MONGODB_USER = process.env.MONGODB_USER;
-    const MONGODB_PASS = process.env.MONGODB_PASS;
+    // app.use((req, _, next) => {
+    //     //console.log(req.headers);
+    //     next();
+    // })
 
-    mongoose.connect(
-        `mongodb+srv://${MONGODB_USER}:${MONGODB_PASS}@cluster0-23rda.mongodb.net/test?retryWrites=true&w=majority`,
-        {
-            useNewUrlParser: true,
-            useUnifiedTopology: true,
-        }
-    )
-        .then(() => {
-            console.log("Mongodb is connected successfully");
-
-            const server = new ApolloServer({
-                schema,
-                context: ({ req, res }) => ({req, res }),
-            });
-            
-            server.applyMiddleware({ app, cors: false });
-            const PORT = process.env.PORT;
-            app.listen(PORT, () => {
-                console.log(`Server is running on PORT: ${PORT}`)
-            })
-        })
-        .catch(err => {
-            console.log(err);
-        })
+    server.applyMiddleware({ app, path: "/api/graphql", cors: false });
+    const PORT = process.env.PORT;
+    app.listen(PORT, () => {
+        console.log(`Server is running on PORT: ${PORT}`)
+    })
 }
 
 startServer();

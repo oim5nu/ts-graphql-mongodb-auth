@@ -1,25 +1,29 @@
 {
-  "name": "ts-graphql-mongodb-starter",
+  "name": "ts-graphql-mongodb-auth",
   "version": "1.0.0",
-  "description": "\"Boilerplate for setting up project for api server using typescript mongodb graphql\"",
+  "description": "\"Boilerplate repo for api server using typescript mongodb graphql & jwt\"",
   "main": "./src/index.ts",
   "scripts": {
     "dev": "ts-node-dev --respawn src/index.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Yuanpeng Zheng",
+  "keywords": ["typescript", "graphql", "mongodb", "jwt", "apollo", "express"],
   "license": "MIT",
   "dependencies": {
     "apollo-server-express": "^2.16.0",
+    "class-validator": "^0.12.2",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "graphql": "^15.3.0",
+    "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.9.25",
     "reflect-metadata": "^0.1.13",
     "type-graphql": "^1.0.0-rc.3"
   },
   "devDependencies": {
     "@types/express": "^4.17.7",
+    "@types/jsonwebtoken": "^8.5.0",
     "@types/mongoose": "^5.7.32",
     "@types/node": "^14.0.26",
     "nodemon": "^2.0.4",
